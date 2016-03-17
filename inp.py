@@ -1,40 +1,46 @@
 #!/usr/bin/python3
 
+"""
+    Debounce and detect long press vs. short press from
+    a button connected to a GPIO input. The input is 
+    configured with a pullup and the external switch 
+    shorts the input to ground.
+
+    User needs membership in group 'gpio' for this to work.
+"""
 import RPi.GPIO as GPIO
 import time
 import operator
 
-#GPIO.setmode(GPIO.BOARD)
+#GPIO.setmode(GPIO.BOARD)       # ... in the end there can be only one. ;)
 GPIO.setmode(GPIO.BCM)
-input=18
-debounce = 0.10     # debonce time
-longPress = 1.0     # minimum time for long press
-doublePress = 0.35  # maximum time between presses for double press
+
+input=18            # GPIO18 in BCM nomenclature, Pin 12 as Board
+debounce = 0.05     # debounce time
+longPress = 0.5     # minimum time for long press
 
 GPIO.setup(input, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-print("pin", input, "is", GPIO.input(input))
-startTime = 0
+print("pin", input, "is now", GPIO.input(input))
 
 def myFallingCallback(channel):
+    """
+    Activate when button is pressed and debounce/wait for long press
+    """
+    startTime = time.time()         # start timing for long press
     print("timing")
-    time.sleep(debounce)             # wait to see if it is going to stay low
-    if(GPIO.input(channel)==1): # go high again?
+    time.sleep(debounce)            # wait to see if it is going to stay low
+    if(GPIO.input(channel)==1):     # go high again?
         return
-    loopCount = longPress-2*debounce
-    while loopCount > 0:         # loop to see how long user holds button
-        time.sleep(debounce)             # time short press
+    loopCount = longPress-2*debounce    # how long to wait
+    while loopCount > 0:            # loop for 'long press time' or until button is released
+        time.sleep(debounce)        # pause a bit
         if(GPIO.input(channel)==1): # button released?
-            if(time.time()-startTime < doublePress):
-                print("double pres")
-                #startTime = time.time()
-                return
             print ("single press")
-            startTime = time.time()
             return
         loopCount -= debounce
-    while(GPIO.input(channel)==0):  # button still pressed?
-        time.sleep(debounce)             # wait to see if it is going to stay low
+    while(GPIO.input(channel)==0):  # loop until button released
+        time.sleep(debounce)        # pause a bit
     print("long press")
     return
 
