@@ -1,19 +1,43 @@
+Purpose:
+  SWMBO decorates her office with a cardboard fireplace over the
+  holidays. She uses brick patterned wrapping paper and a picture of a
+  fireplace. I thought it would be very cool to use a retired monitor
+  to loop a video of a fireplace (running pn a Raspberry Pi Zero) and
+  use that to replace the picture.
+
+  The next step is to be able to cycle through videos (and to stop the
+  video when I want to do something at the console.) For that I chose to
+  use a shell script operating based on some files written to /tmp (*)
+  and a Python script to read inputs from a GPIO pin and manage the files.
+
+  (*) This runs on a Pi configured for a readonly file system but /tmp
+  is in RAM and can be written.
+
+Status:
+  Skeletons for the shell and pythoin script are written and presently
+  under active development.
+
+Bugs:
+  Videos are read from my home directory. (/home/hbarta/Videos) It is
+  left as an upgrade to use the $HOME directory or specify a directory
+  on the command line.
+
 Strategy for fireplace videos
 
-fireplace.sh
-    reads video name from /tmp/nextVideo and deletes the file
-    If the file does not exist on startup it will loop until it is
-    does not display if /tmp/StopFireplace exists
-    If /tmp/StopFireplace and /tmp/nextVideo does not exist, it will loop the same video
-    if /tmp/nextVideo is found it will start playing the contents.
-
-controlVideo.py
-    Read the Videos from /home/hbarta/Videos and write the first
-    one to /tmp/nextVideo.
-    Monitor the pushbutton. On a short press, it will:
-     - write the next video to /tmp/nextVideo
-     - delete /tmp/StopFireplace
-     - killall omxplayer (to get fireplace.sh to read the video name.)
-    On a long press it will 
-     - create /tmp/StopFireplace
-
+  fireplace.sh
+      reads video name from /tmp/nextVideo and deletes the file If the file
+      does not exist on startup it will loop until it is does not display
+      if /tmp/StopFireplace exists If /tmp/StopFireplace and /tmp/nextVideo
+      does not exist, it will loop the same video if /tmp/nextVideo is
+      found it will start playing the contents.
+  
+  controlVideo.py
+      Read the Videos from /home/hbarta/Videos and write the first
+      one to /tmp/nextVideo.
+      Monitor the pushbutton. On a short press, it will:
+       - write the next video to /tmp/nextVideo
+       - delete /tmp/StopFireplace
+       - killall omxplayer (to get fireplace.sh to read the video name.)
+      On a long press it will 
+       - create /tmp/StopFireplace
+  
