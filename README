@@ -1,0 +1,19 @@
+Strategy for fireplace videos
+
+fireplace.sh
+    reads video name from /tmp/nextVideo and deletes the file
+    If the file does not exist on startup it will loop until it is
+    does not display if /tmp/StopFireplace exists
+    If /tmp/StopFireplace and /tmp/nextVideo does not exist, it will loop the same video
+    if /tmp/nextVideo is found it will start playing the contents.
+
+controlVideo.py
+    Read the Videos from /home/hbarta/Videos and write the first
+    one to /tmp/nextVideo.
+    Monitor the pushbutton. On a short press, it will:
+     - write the next video to /tmp/nextVideo
+     - delete /tmp/StopFireplace
+     - killall omxplayer (to get fireplace.sh to read the video name.)
+    On a long press it will 
+     - create /tmp/StopFireplace
+
