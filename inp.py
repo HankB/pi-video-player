@@ -10,7 +10,7 @@
 """
 import RPi.GPIO as GPIO
 import time
-import operator
+#import operator
 
 #GPIO.setmode(GPIO.BOARD)       # ... in the end there can be only one. ;)
 GPIO.setmode(GPIO.BCM)
@@ -48,7 +48,11 @@ def myFallingCallback(channel):
 GPIO.add_event_detect(input, GPIO.FALLING)
 GPIO.add_event_callback(input, myFallingCallback)
 
-while(1):
-    time.sleep(5)
-    #print("still sleeping", int(time.monotonic()))
+try:
+    while(1):
+        time.sleep(5)
+        #print("still sleeping", int(time.monotonic()))
+except (KeyboardInterrupt, SystemExit):
+    print("GPIO cleanup")
+    GPIO.cleanup()       # clean up GPIO on CTRL+C exit  
 
