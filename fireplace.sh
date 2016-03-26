@@ -16,13 +16,13 @@ do
     # wait until 'blocking' file is removed
     while( [ -e /tmp/StopFireplace ] )
     do
-        echo "waiting on  /tmp/StopFireplace"
+        echo "waiting on /tmp/StopFireplace"
         sleep 3
     done
 
     while(! [ -e /tmp/nextVideo ] )
     do
-        echo "waiting for  /tmp/nextVideo"
+        echo "waiting for /tmp/nextVideo"
         sleep 3
     done
     # fetch video name
@@ -31,6 +31,6 @@ do
         VIDEO=`cat  /tmp/nextVideo`
         rm  /tmp/nextVideo
         echo "playing " $VIDEO
-        sleep 5
+        omxplayer "$VIDEO"
     fi
 done
