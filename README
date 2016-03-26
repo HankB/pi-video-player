@@ -14,8 +14,10 @@ Purpose:
   is in RAM and can be written.
 
 Status:
-  Skeletons for the shell and pythoin script are written and presently
-  under active development.
+  Shell and python script are written and presently under active
+  development. At present it seems to work but the Python script writes a
+  number of error messages and the shell script puts out some unnecessary
+  messages.
 
 Bugs:
   Videos are read from my home directory. (/home/hbarta/Videos) It is
@@ -24,13 +26,14 @@ Bugs:
 
 Strategy for fireplace videos
 
-  fireplace.sh
-      reads video name from /tmp/nextVideo and deletes the file If the file
-      does not exist on startup it will loop until it is does not display
-      if /tmp/StopFireplace exists If /tmp/StopFireplace and /tmp/nextVideo
-      does not exist, it will loop the same video if /tmp/nextVideo is
-      found it will start playing the contents.
-  
+ fireplace.sh
+    Reads video name from /tmp/nextVideo and then deletes the file.
+    If the file does not exist on startup it will loop until it is.
+    It does not play the video if /tmp/StopFireplace exists.  If both
+    /tmp/StopFireplace and /tmp/nextVideo do not exist, it will loop
+    the same video (if a video name has already been read in.)
+
+ 
   controlVideo.py
       Read the Videos from /home/hbarta/Videos and write the first
       one to /tmp/nextVideo.
