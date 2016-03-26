@@ -4,33 +4,38 @@
 # /tmp. See the README... Heck from the README:
 #
 # fireplace.sh
-#    reads video name from /tmp/nextVideo and deletes the file
-#    If the file does not exist on startup it will loop until it is
-#    does not display if /tmp/StopFireplace exists
-#    If /tmp/StopFireplace and /tmp/nextVideo does not exist, it will loop the same video
-#    if /tmp/nextVideo is found it will start playing the contents.
+#    Reads video name from /tmp/nextVideo and then deletes the file.
+#    If the file does not exist on startup it will loop until it is.
+#    It does not play the video if /tmp/StopFireplace exists.
+#    If both /tmp/StopFireplace and /tmp/nextVideo do not exist, 
+#    it will loop the same video (if a video name has already been
+#    read in.)
 
 
 while(:)        # outer loop, do forever
 do
-    # wait until 'blocking' file is removed
-    while( [ -e /tmp/StopFireplace ] )
+
+    while [ -e /tmp/StopFireplace ]       # wait until 'blocking' file is removed
     do
         echo "waiting on /tmp/StopFireplace"
         sleep 3
     done
 
-    while(! [ -e /tmp/nextVideo ] )
-    do
-        echo "waiting for /tmp/nextVideo"
-        sleep 3
-    done
-    # fetch video name
-    if (! [ -e /tmp/StopFireplace ] )
+    if [ -z ${VIDEO+x} ]                    # if there is no video name yet
+    then
+        while ! [ -e /tmp/nextVideo ]       # wait for the video file
+        do
+            echo "waiting for /tmp/nextVideo"
+            sleep 3
+        done
+    fi
+
+    if [ -e /tmp/nextVideo ]                # fetch video name if file exists
     then
         VIDEO=`cat  /tmp/nextVideo`
         rm  /tmp/nextVideo
-        echo "playing " $VIDEO
-        omxplayer "$VIDEO"
     fi
+
+    echo "playing " $VIDEO
+    omxplayer "$VIDEO" >/dev/null 2>&1
 done
