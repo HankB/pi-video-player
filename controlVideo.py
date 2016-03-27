@@ -19,14 +19,21 @@ import os
 import sys
 import psutil
 
+# some file names
+player      ="omxplayer.bin"
+videoDir    ="/home/hbarta/Videos/"
+pauseFile   ="/tmp/StopFireplace"
+videoFile   ="/tmp/nextVideo"
+
 # find video names
-videoFiles = os.listdir("/home/hbarta/Videos")
+videoFiles = os.listdir(videoDir)
 videoFiles = sorted(videoFiles)
-print(videoFiles)
+
+"""
 for i in range(0, len(videoFiles)):
     print(i, "/home/hbarta/Videos/"+videoFiles[i])
 #sys.exit()
-
+"""
 
 #GPIO.setmode(GPIO.BOARD)       # ... in the end there can be only one. ;)
 GPIO.setmode(GPIO.BCM)
@@ -49,30 +56,30 @@ def killProcess(procname):
 def pause():
     """
     Write the file that causes the shell script to pause
-    and kill oxplayer
+    and kill omxplayer
     """
-    open( "/tmp/StopFireplace", 'a').close()
-    killProcess("omxplayer.bin")
+    open( pauseFile, 'a').close()
+    killProcess(player)
         
 def unPause():
     """
     Remove the file that causes the shell script to pause
     """
-    os.remove("/tmp/StopFireplace")
+    if os.path.exists(pauseFile):
+        os.remove(pauseFile)
 
 def play(video):
     """
     Write the video to play to /tmp/nextVideo and kill omxplayer so it
-    goes to the next video
+    goes to the next video.
     """
-    fname = "/tmp/nextVideo"
-    tmpName = fname + ".tmp"
+    tmpName = videoFile + ".tmp"
     f = open(tmpName, 'w')
     f.truncate()
     f.write(video)
     f.close()
-    os.rename(tmpName, fname)
-    killProcess("omxplayer.bin")
+    os.rename(tmpName, videoFile)
+    killProcess(player)
 
 def myFallingCallback(channel):
     """
@@ -86,13 +93,15 @@ def myFallingCallback(channel):
     while loopCount > 0:            # loop for 'long press time' or until button is released
         time.sleep(debounce)        # pause a bit
         if(GPIO.input(channel)==1): # button released?
-            print("play"+"/home/hbarta/Videos/"+videoFiles[myFallingCallback.nextVideo])
-            play("/home/hbarta/Videos/"+videoFiles[myFallingCallback.nextVideo])
+            print("play"+videoDir+videoFiles[myFallingCallback.nextVideo])
+            play(videoDir+videoFiles[myFallingCallback.nextVideo])
             unPause()
-            killProcess("omxplayer.bin")
+            killProcess(player)
+            print("incrementing index from ", myFallingCallback.nextVideo)
             myFallingCallback.nextVideo += 1
             if myFallingCallback.nextVideo >= len(videoFiles):
                 myFallingCallback.nextVideo =0
+            print("index now ", myFallingCallback.nextVideo)
             return
         loopCount -= debounce
     while(GPIO.input(channel)==0):  # loop until button released
@@ -103,7 +112,7 @@ def myFallingCallback(channel):
 
 # initialze our loop index and start the first video
 myFallingCallback.nextVideo=0
-play("/home/hbarta/Videos/"+videoFiles[myFallingCallback.nextVideo])
+play(videoDir+videoFiles[myFallingCallback.nextVideo])
 myFallingCallback.nextVideo=1
 
 GPIO.add_event_detect(input, GPIO.FALLING)
