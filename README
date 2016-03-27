@@ -19,11 +19,12 @@ Status:
   number of error messages and the shell script puts out some unnecessary
   messages.
 
-Bugs:
+Bugs/TODO:
   Videos are read from my home directory. (/home/hbarta/Videos) It is
   left as an upgrade to use the $HOME directory or specify a directory
   on the command line.
 
+  Abstract the press/long press functionality out of myFallingCallback()
 Strategy for fireplace videos
 
  fireplace.sh
