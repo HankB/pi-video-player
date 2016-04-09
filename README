@@ -2,7 +2,7 @@ Purpose:
   SWMBO decorates her office with a cardboard fireplace over the
   holidays. She uses brick patterned wrapping paper and a picture of a
   fireplace. I thought it would be very cool to use a retired monitor
-  to loop a video of a fireplace (running pn a Raspberry Pi Zero) and
+  to loop a video of a fireplace (running on a Raspberry Pi Zero) and
   use that to replace the picture.
 
   The next step is to be able to cycle through videos (and to stop the
@@ -14,10 +14,8 @@ Purpose:
   is in RAM and can be written.
 
 Status:
-  Shell and python script are written and presently under active
-  development. At present it seems to work but the Python script writes a
-  number of error messages and the shell script puts out some unnecessary
-  messages.
+  Software is deployed and working and delivered to dazzle co-workers of
+  SWMBO. :D
 
 Bugs/TODO:
   Videos are read from my home directory. (/home/hbarta/Videos) It is
@@ -25,6 +23,7 @@ Bugs/TODO:
   on the command line.
 
   Abstract the press/long press functionality out of myFallingCallback()
+
 Strategy for fireplace videos
 
  fireplace.sh
@@ -45,3 +44,32 @@ Strategy for fireplace videos
       On a long press it will 
        - create /tmp/StopFireplace
   
+Setup:
+  There are Pythion requirements that you will be appraised of when the
+  Python script starts up.
+
+  omxplayer is used to play the videos and is installed on most distros
+  I have tried. One trweak to get capability to run omxplayer as a user
+  is to create the following file:
+
+    echo 'SUBSYSTEM=="vchiq",GROUP="video",MODE="0660"' > /etc/udev/rules.d/10-vchiq-permissions.rules
+
+  The user this runs as must be a member of group 'gpio'. There are
+  commands to do this but I usually just edit /etc/group as root/sudo.
+
+  Finally, there needs to be a way to run this. I added the followinbg line to my crontab 
+  ( 'crontab -e' to edit crontab.)
+
+    #@reboot /home/hbarta/bin/runVideo.sh
+
+  And the script that runs is:
+
+    hbarta@allred:~/Documents/pi-video-player $ cat /home/hbarta/bin/runVideo.sh
+    #!/bin/sh
+    /home/hbarta/bin/fireplace.sh >/tmp/fp.txt 2>&1 &
+    /home/hbarta/bin/controlVideo.py >/tmp/ct.txt 2>&1 &
+
+    hbarta@allred:~/Documents/pi-video-player $ 
+  
+
+
