@@ -3,7 +3,10 @@ Purpose:
   holidays. She uses brick patterned wrapping paper and a picture of a
   fireplace. I thought it would be very cool to use a retired monitor
   to loop a video of a fireplace (running on a Raspberry Pi Zero) and
-  use that to replace the picture.
+  use that to replace the picture. To add some functionality connect a
+  switch to a couple GPIO pins and pressing on the switch will rotate
+  through available videos. A long press will pause the video player
+  and is useful if you need to do something at the console.
 
   The next step is to be able to cycle through videos (and to stop the
   video when I want to do something at the console.) For that I chose to
@@ -45,7 +48,17 @@ Strategy for fireplace videos
        - create /tmp/StopFireplace
   
 Setup:
-  There are Pythion requirements that you will be appraised of when the
+  The first iteration was using Raspbian/Jessie Lite on a 4GB card.
+  There is no need for a GUI for this project. This worked fine until
+  I wanted to add more videos. When I tried to copy the 4GB imge to a
+  16GB card and expand the user partition (On an Intel/Linux desktop)
+  I was unable to do so because gparted claimed there was a problem
+  with the partitions. At that point I found I was unable to back out
+  of the readonly setup in order to update/install new software too.
+  I wound up just installing again to the 16GB card and copying my
+  scripts there.
+
+  There are Python requirements that you will be appraised of when the
   Python script starts up.
 
   omxplayer is used to play the videos and is installed on most distros
@@ -57,8 +70,8 @@ Setup:
   The user this runs as must be a member of group 'gpio'. There are
   commands to do this but I usually just edit /etc/group as root/sudo.
 
-  Finally, there needs to be a way to run this. I added the followinbg line to my crontab 
-  ( 'crontab -e' to edit crontab.)
+  Finally, there needs to be a way to run this. I added the followinbg
+  line to my crontab ( 'crontab -e' to edit crontab.)
 
     #@reboot /home/hbarta/bin/runVideo.sh
 
@@ -71,5 +84,27 @@ Setup:
 
     hbarta@allred:~/Documents/pi-video-player $ 
   
+  H/W configuration. 
 
+    This runs on a Pi Zero which does not have pins installed on the
+    GPIO connections. I soldered single pins to pin 6 (ground) and 12
+    (GPIO18). This GPIO pin is configured (in S/W) with an internal
+    pullup resistor. It will read high with nothing connected. Short it
+    to ground and it will read zero. I soldered a momentary contact
+    pushbutton to a couple Dupont jumpers which I plug onto the pins.
 
+  Readonly filesystem configuration.
+
+    The final step once everything is working is to make the root
+    filesystem readonly. That way it is safe to just shut off power with
+    no risk of corrupting the file system.  I followed the instructions
+    in the second post in this thread:
+
+      https://www.raspberrypi.org/forums/viewtopic.php?f=29&t=22596
+
+    An earlier release used the instructions at 
+
+      https://hallard.me/raspberry-pi-read-only/`
+
+    But as already mentioned, I was unable to back out those changes
+    when needed.
